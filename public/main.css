@@ -1,0 +1,22 @@
+h1, h4 {
+    padding-top: 20px;
+}
+
+#welcome-section {
+    padding-top: 100px;
+    padding-bottom: 50px;
+}
+
+#weather-section {
+    background-color:#A4CEF7;  /*#353DB2*/
+    padding-top: 50px;
+    padding-bottom: 50px;
+}
+
+#owl-section {
+    padding-top: 50px;
+    padding-bottom: 10px;
+}
+
+
+

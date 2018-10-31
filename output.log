@@ -1,0 +1,10 @@
+nohup: ignoring input
+[0mGET / [36m304 [0m14.099 ms - -[0m
+[0mGET /main.css [36m304 [0m1.901 ms - -[0m
+In getcity route
+/^Panguitch/
+Panguitch
+[ { city: 'Panguitch' } ]
+[0mGET /getcity?q=Panguitch [36m304 [0m9.720 ms - -[0m
+[0mGET / [36m304 [0m1.028 ms - -[0m
+[0mGET /main.css [36m304 [0m0.841 ms - -[0m
