@@ -1,24 +1,251 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html>
 <head>
+    <title>SlackExchange</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 
+    <script src="http://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <style>
+        h1, h4 {
+            padding-top: 20px;
+        }
+
+        body{
+            font-family: 'Helvetica';
+        }
+
+        #channel-section {
+        }
+        .column {
+            position: fixed;
+            top: 80px;
+            padding: 30px 10px 30px 10px;
+            width: 250px;
+            background-color: #660066;
+            color: white;
+            height:calc(100vh - 70px);
+        }
+        .header {
+            padding-top: 10px;
+            width: 100vw;
+            position: fixed;
+            color: white;
+            background-color: #410041;
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            justify-content: center;
+            height: 80px;
+        }
+        .message-bar {
+            padding: 40px;
+            width: calc(100vw - 250px);
+            height: 100px;
+            background-color: #ffffff;
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            box-shadow: 0px 0px 8px rgba(0, 0, 0, .2);
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            padding-bottom: 30px;
+        }
+        input{
+            border: 0;
+            outline: 0;
+            background: transparent;
+            border-bottom: 1px solid #c8c8c8;
+        }
+        .message-input {
+            width: calc(50vw - 130px);
+            min-width: 200px;
+        }
+        input::placeholder {
+            font-style: italic;
+            font-size: .9em;
+        }
+        .message-form {
+            width: 100%;
+            display:flex;
+            align-items: center;
+            justify-content: space-between;
+
+            flex-wrap: wrap;
+        }
+        .message-container {
+            width: calc(100vw - 250px);
+            max-height: calc(100vh - 183px);
+            position: fixed;
+            bottom: 100px;
+            right: 0;
+            justify-content: flex-end;
+            overflow: auto;
+        }
+        .message {
+            padding-left: 20px;
+            height: 70px;
+            /*border-bottom: 1px solid #d7d7d7;*/
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .message-info-container {
+            display: flex;
+            width: 200px;
+            align-items: center;
+            font-size: .8em;
+
+        }
+        .message-sender {
+            margin-right: 12px;
+            font-weight: bold;
+            font-style: italic;
+        }
+        .message-time {
+            font-style: italic;
+            color: grey;
+        }
+        .submit-message-button{
+            margin-left: 12px;
+            border: 0;
+            width: 130px;
+            height: 34px;
+            border-radius: 6px;
+            background-color: #00b431;
+            color: white;
+        }
+    </style>
+    <script>
+        $( document ).ready (function () {
+            $('#messages').scrollTop($('#messages')[0].scrollHeight);
+        })
+    </script>
 </head>
 <body>
-<h1>Hello World!</h1>
-<div id="future"></div>
-<form id="form" id="chat_form">
-    <input id="chat_input" type="text">
-    <input type="submit" value="Send">
-</form>
-<script src="/jquery/dist/jquery.js"></script>
-<script src="/socket.io/socket.io.js"></script>
+    <div id="welcome-section" class="header text-center">
+        <h5>SlackExchange</h5>
+        <p>Be Anonymous.</p>
+    </div>
+    <div id="body-section" class="container-fluid">
+        <div class="row">
+            <div id="channel-section" class="column">
+                <h3>The Issues</h3>
+                <hr>
+                <h4>Channels</h4>
+                <hr>
+                <h6>Add a mock channel name:</h6>
+                <p>ex. general, off-topic, extremely-off-topic, y-u-talkin-bout-dis?</p>
+                <span>
+                    <form>
+                        <span># <input type="text" id="channelField" value=""></span>
+                    </form>
+                </span>
 
+            </div>
+            <div class="col-10">
+                <div id="header-section" class="text-left">
+                    <p>Practice your best responses!</p>
+                </div>
+                <div id="chat-section" class="text-left">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="message-bar">
+        <form class="message-form">
+            <div>
+                <input
+                    class="message-input"
+                    id="_message-input"
+                    placeholder="#message"
+                    type="text"
+                    name="firstname">
+                <button id="_submit-message-button" class="submit-message-button">Send</button>
+            </div>
+            <div>
+                <input
+                    id="_name-input"
+                    placeholder="@choose a name"
+                    type="text"
+                    name="lastname">
+            </div>
+        </form>
+    </div>
+
+    <div id="messages" class="message-container">
+
+    </div>
+
+    <script src="/jquery/dist/jquery.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
 </body>
 </html>
 
 <script>
-    var socket = io.connect('http://localhost:3000');
+    function getFormattedTime() {
+        let date = new Date();
+        let hours = date.getHours() % 12 === 0 ? 12 : date.getHours() % 12;
+        let minutes = (date.getMinutes()<10?'0':'') + date.getMinutes();
+        return hours + ':' + minutes;
+    }
+
+    let anonymous_index = '';
+    var socket = io.connect();
+    var messages = [];
+
     socket.on('connect', function(data) {
-        socket.emit('join', 'Hello World from client');
+        socket.emit('join', {sender: 'Sender 1', time: getFormattedTime(), content: 'Sender 1 has joined this channel'});
     });
+
+    socket.on('anonymous-index', function (data) {
+        if (anonymous_index === '')
+            anonymous_index = data.index;
+    });
+
+    socket.on('broad', function(data) {
+        console.log('recieved');
+        $('#messages').append(
+            "<div class=\"message\">\n" +
+            "        <div class=\"message-info-container\">\n" +
+            "            <div class=\"message-sender\">" + data.sender + "</div>\n" +
+            "            <div class=\"message-time\">" + data.time + "</div>\n" +
+            "        </div>\n" +
+            "        <div class=\"message-content\">" + data.content + "</div>\n" +
+            "    </div>"
+        );
+        $('#messages').scrollTop($('#messages')[0].scrollHeight);
+    });
+
+    socket.on('initial', function (data) {
+        if (messages.length > 0)
+            return;
+        messages = data;
+        messages.map(m => {
+            $('#messages').append(
+                "<div class=\"message\">\n" +
+                "        <div class=\"message-info-container\">\n" +
+                "            <div class=\"message-sender\">" + m.sender + "</div>\n" +
+                "            <div class=\"message-time\">" + m.time + "</div>\n" +
+                "        </div>\n" +
+                "        <div class=\"message-content\">" + m.content + "</div>\n" +
+                "    </div>"
+            );
+        });
+        $('#messages').scrollTop($('#messages')[0].scrollHeight);
+    });
+
+    $( "#_submit-message-button" ).click(function(e) {
+        e.preventDefault();
+        var message = $('#_message-input').val();
+        var name = $('#_name-input').val();
+        name = name === '' ? 'anonymous' + anonymous_index : name;
+        $('#_message-input').val('');
+        socket.emit('messages', {sender: name, time: getFormattedTime(), content: message});
+        $('#messages').scrollTop($('#messages')[0].scrollHeight);
+    });
+
+
 </script>
