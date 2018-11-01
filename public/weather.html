@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>City Finder and OwlBot</title>
+        <title>SlackExchange</title>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
         <link rel="stylesheet" type="text/css" href="main.css">
         <script
@@ -84,9 +84,35 @@
         </script>
     </head>
     <body>
-        <div id="welcome-section" class="container-fluid text-center">
-            <h1>Welcome to the Weather Finder Dictionary!</h1>
-            <p>Look up the weather in a Utah City AND lookup a word! Wow!</p>
+        <div id="welcome-section" class="text-center">
+            <h5>SlackExchange</h5>
+            <p>Be Anonymous.</p>
+        </div>
+        <div id="body-section" class="container-fluid">
+            <div class="row">
+            <div id="channel-section" class="col-2">
+                <h3>The Issues</h3>
+                <hr>
+                <h4>Channels</h4>
+                <hr>
+                <h6>Add a mock channel name:</h6>
+                <p>ex. general, off-topic, extremely-off-topic, y-u-talkin-bout-dis?</p>
+                <span>
+                    <form>
+                        <span># <input type="text" id="channelField" value=""></span>
+                    </form>
+                </span>
+            
+            </div>
+            <div class="col-10">
+                <div id="header-section" class="text-left">
+                    <p>Practice your best responses!</p>
+                </div>
+                <div id="chat-section" class="text-left">
+                    
+                </div>
+            </div>
+            </div>
         </div>
         <div id="weather-section" class="container-fluid">
             <div class="row">
@@ -127,5 +153,21 @@
         <!--<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>-->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+        <script src="/socket.io/socket.io.js"></script>
     </body>
 </html>
+
+<script>
+ var socket = io.connect();
+ socket.on('connect', function(data) {
+    socket.emit('join', 'Hello World from client');
+ });
+  socket.on('broad', function(data) {
+         $('#future').append(data+ "<br/>");
+   });
+ $('form').submit(function(e){
+     e.preventDefault();
+     var message = $('#chat_input').val();
+     socket.emit('messages', message);
+ });
+</script>

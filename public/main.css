@@ -3,8 +3,13 @@ h1, h4 {
 }
 
 #welcome-section {
-    padding-top: 100px;
-    padding-bottom: 50px;
+    background-color:#A4CEF7;
+}
+
+#channel-section {
+    background-color: #660066;
+    color: white;
+    height:2000px;
 }
 
 #weather-section {
