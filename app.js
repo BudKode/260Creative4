@@ -5,6 +5,7 @@ var io = require('socket.io').listen(server);
 var messages = [];
 var curr_index = 1;
 
+
 app.use(express.static(__dirname + '/node_modules'));
 app.get('/', function(req, res,next) {
     res.sendFile(__dirname + '/index.html');
